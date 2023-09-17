@@ -12,7 +12,7 @@ Once create a bot in the discord website, edit the config/config.json adding you
 nodemon
 ```
 
-##Commands
+## Commands
 For this bot, the following commands are working and available:
 
 |   Command   | Description                                |
