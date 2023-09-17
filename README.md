@@ -1,7 +1,7 @@
 # DiscordMusicBot
 Bot to play youtube videos on the voice channel.
 
-# #How to run
+## How to run
 Install the dependencies
 ``` 
 npm install
