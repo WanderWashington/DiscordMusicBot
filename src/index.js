@@ -118,7 +118,7 @@ async function execute(message, serverQueue) {
       connection.subscribe(audioPlayer);
 
       queueConstruct.connection = connection;
-      playSong(message.guild, queueConstruct);
+      playSong(message, queueConstruct);
 
     } catch (err) {
       console.log(err);
@@ -129,7 +129,7 @@ async function execute(message, serverQueue) {
     serverQueue.songs.push({ stream, title: yt_info[0].title}); // Enqueue the song object
     if(audioPlayer.state.status !== 'idle')
       return message.channel.send(`${yt_info[0].title} has been added to the queue!`);
-    playSong(message.guild, serverQueue);
+    playSong(message, serverQueue);
     message.channel.send(`Playing ${yt_info[0].title}`);
   }
 }
@@ -174,8 +174,8 @@ function stop(message, serverQueue, audioPlayer) {
   return ;
 }
 
-function playSong(guild, queueConstruct) {
-  const serverQueue = queue.get(guild.id);
+function playSong(message, queueConstruct) {
+  const serverQueue = queue.get(message.guild.id);
 
   if (!serverQueue) {
     return;
@@ -200,7 +200,7 @@ function playSong(guild, queueConstruct) {
   audioPlayer.on('stateChange', (oldState, newState) => {
     if (newState.status === 'idle') {
       console.log('Finished playing:', songInfo.title);
-      playNextSong(guild, serverQueue);
+      playNextSong(message, serverQueue);
     }
   });
 
@@ -323,7 +323,7 @@ async function playQueue(message, serverQueue, audioPlayer, voiceChannel) {
     console.log("oldState", oldState.status);
     console.log("newState", newState.status);
       if (newState.status === 'idle') {
-        playNextSong(message, serverQueue);
+        playNextSong(message.guild, serverQueue);
       }
   });
   console.log('Playing:', song);
