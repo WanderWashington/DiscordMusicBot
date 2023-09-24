@@ -15,7 +15,7 @@ const client = new Client({
 
 const audioPlayer = createAudioPlayer({
   behaviors: {
-    noSubscriber: NoSubscriberBehavior.Pause,
+    noSubscriber: NoSubscriberBehavior.Idle,
   },
 });
 
@@ -37,7 +37,7 @@ client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
   if (!message.content.startsWith(prefix)) return;
 
-  console.log(`URL:: ${message.content}`);
+  console.log(`Content:: ${message.content}`);
   let serverQueue = queue.get(message.guild.id);
   executeCommand(message, serverQueue);
 
@@ -76,8 +76,6 @@ function executeCommand(message, serverQueue){
 
 
 async function execute(message, serverQueue) {
-  let args = message.content.split(' ');
-
   let voiceChannel = message.member.voice.channel;
   if (!voiceChannel)
     return message.channel.send('You need to be in a voice channel to play music!');
@@ -129,9 +127,10 @@ async function execute(message, serverQueue) {
     }
   } else {
     serverQueue.songs.push({ stream, title: yt_info[0].title}); // Enqueue the song object
-    if(audioPlayer.state.status === 'idle')
-      playSong(message.guild.id, serverQueue);
-    return message.channel.send(`${yt_info[0].title} has been added to the queue!`);
+    if(audioPlayer.state.status !== 'idle')
+      return message.channel.send(`${yt_info[0].title} has been added to the queue!`);
+    playSong(message.guild, serverQueue);
+    message.channel.send(`Playing ${yt_info[0].title}`);
   }
 }
 
@@ -171,6 +170,7 @@ function stop(message, serverQueue, audioPlayer) {
   serverQueue.songs = [];
   serverQueue.stopping = true;
   audioPlayer.stop();
+  audioPlayer.state.status = "idle";
   return ;
 }
 
@@ -198,12 +198,11 @@ function playSong(guild, queueConstruct) {
   });
   // Set up an event listener for when the audio player's state changes
   audioPlayer.on('stateChange', (oldState, newState) => {
-    if (newState.status === 'idle' ) {
+    if (newState.status === 'idle') {
       console.log('Finished playing:', songInfo.title);
       playNextSong(guild, serverQueue);
     }
   });
-  
 
   console.log('Playing:', songInfo.title);
 }
