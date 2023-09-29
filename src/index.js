@@ -235,7 +235,7 @@ async function executePlaylist(message, voiceChannel, serverQueue, playlistURL) 
 
     // Start playback if not already playing
     if (!serverQueue.playing) {
-      playNextSong(message.guild, serverQueue);
+      playNextSong(message, serverQueue);
     }
 
     playQueue(message, serverQueue, audioPlayer, voiceChannel);
@@ -320,10 +320,8 @@ async function playQueue(message, serverQueue, audioPlayer, voiceChannel) {
   serverQueue.connection.subscribe(audioPlayer);
   audioPlayer.on('stateChange', (oldState, newState) => 
   {
-    console.log("oldState", oldState.status);
-    console.log("newState", newState.status);
       if (newState.status === 'idle') {
-        playNextSong(message.guild, serverQueue);
+        playNextSong(message, serverQueue);
       }
   });
   console.log('Playing:', song);
