@@ -294,7 +294,7 @@ async function executePlaylist(message, voiceChannel, serverQueue, playlistURL) 
 
     for (let song of playlistSongs) {
       let stream = await play.stream(song.url);
-      enqueueSong(message, voiceChannel, serverQueue, stream, song.title, shuffle);
+      enqueueSong(message, voiceChannel, serverQueue, stream, song.title);
     }
 
     if(shuffle)
@@ -314,7 +314,7 @@ async function executePlaylist(message, voiceChannel, serverQueue, playlistURL) 
 
 
 
-function enqueueSong(message, voiceChannel, serverQueue, stream, title, shuffle) {
+function enqueueSong(message, voiceChannel, serverQueue, stream, title) {
   if (!serverQueue) {
     const queueConstruct = {
       textChannel: message.channel,
