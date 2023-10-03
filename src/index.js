@@ -68,6 +68,9 @@ function executeCommand(message, serverQueue){
     case `${prefix}resume`:
       resumeSong(message, serverQueue, audioPlayer);
       return;
+    case `${prefix}list`:
+      queueList(message, serverQueue, audioPlayer);
+      return;
     default:
       message.channel.send('You need to enter a valid command!');
       return;
@@ -86,6 +89,11 @@ async function execute(message, serverQueue) {
   }
   if (message.content.includes("playlist")) {
     executePlaylist(message, voiceChannel, serverQueue, message.content.split('!play')[1].trim());
+    return;
+  }
+
+  if (message.content.split(" ")[1] == "--p") {
+    playSongByPosition(message, serverQueue, audioPlayer);
     return;
   }
 
@@ -207,6 +215,54 @@ function playSong(message, queueConstruct) {
   console.log('Playing:', songInfo.title);
 }
 
+function queueList(message, serverQueue, audioPlayer){ 
+  let qty = 0;
+  message.channel.send("Queue:");
+  serverQueue.songs.forEach(element => {
+    qty++;
+    message.channel.send(`\n[${qty}] - ${element.title}`);
+  });
+}
+
+async function playSongByPosition(message, serverQueue, audioPlayer){ 
+  let position = message.content.split(' ')[2];
+  if(serverQueue.songs.length < position){ 
+    message.channel.send(`Invalid position`);
+    return;
+  }
+  if(!serverQueue){
+    message.channel.send(`Empty Queue`);
+    return;
+  }
+
+  if (serverQueue.stopping) {
+    console.log('Stopping playback');
+    serverQueue.connection.destroy();
+    return;
+  }
+
+  let positionSong = serverQueue.songs[position-1];
+  let firstSong = serverQueue.songs[1];
+  serverQueue.songs[position-1] = firstSong
+  serverQueue.songs.shift();
+  if (!serverQueue.songs.length) {
+    console.log('Playlist finished');
+    message.channel.send('Playlist finished');
+    return;
+  }
+  serverQueue.songs[0] = positionSong;
+
+  let songInfo = serverQueue.songs[0];
+  const audioResource = createAudioResource(songInfo.stream.stream, {
+    inputType: songInfo.stream.type,
+    volume: 0.5,
+  });
+
+  serverQueue.connection.subscribe(audioPlayer); // Subscribe before playing
+  audioPlayer.play(audioResource);
+  
+  message.channel.send(`Playing ${songInfo.title}`);
+}
 
 async function executePlaylist(message, voiceChannel, serverQueue, playlistURL) {
   try {
