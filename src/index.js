@@ -3,6 +3,15 @@ const { prefix, token } = require("../config/config.json");
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, NoSubscriberBehavior } = require('@discordjs/voice');
 const play = require('play-dl');
 
+const commandHandler = {
+  "play":execute,
+  "next":playNextSong,
+  "stop":stop,
+  "pause": pause,
+  "resume":resumeSong,
+  "list":queueList
+};
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -39,42 +48,14 @@ client.on('messageCreate', async (message) => {
 
   console.log(`Content:: ${message.content}`);
   let serverQueue = queue.get(message.guild.id);
-  executeCommand(message, serverQueue);
 
+  processCommand(message, serverQueue);
 });
 
-
-function executeCommand(message, serverQueue){ 
-  let command = message.content.split(' ')[0];
-  switch(command){ 
-    case `${prefix}play`:
-      execute(message,serverQueue);
-      return;
-    case `${prefix}skip`:
-      skip(message, serverQueue);
-      return;
-    case `${prefix}playlist`:
-      executePlaylist(message, serverQueue);
-      return;
-    case `${prefix}next`:
-      playNextSong(message,serverQueue);
-      return;
-    case `${prefix}stop`:
-      stop(message, serverQueue, audioPlayer);
-      return;
-    case `${prefix}pause`:
-      pause(message, serverQueue, audioPlayer);
-      return;
-    case `${prefix}resume`:
-      resumeSong(message, serverQueue, audioPlayer);
-      return;
-    case `${prefix}list`:
-      queueList(message, serverQueue, audioPlayer);
-      return;
-    default:
-      message.channel.send('You need to enter a valid command!');
-      return;
-  }
+function processCommand(message, serverQueue){ 
+  let action = message.content.split(" ")[0].replaceAll(prefix, "");
+  var handler = commandHandler[action]
+  if(typeof handler === 'function') handler(message, serverQueue);
 }
 
 
@@ -93,7 +74,7 @@ async function execute(message, serverQueue) {
   }
 
   if (message.content.split(" ")[1] == "--p") {
-    playSongByPosition(message, serverQueue, audioPlayer);
+    playSongByPosition(message, serverQueue);
     return;
   }
 
@@ -142,15 +123,7 @@ async function execute(message, serverQueue) {
   }
 }
 
-function skip(message, serverQueue) {
-  if (!message.member.voice.channel)
-    return message.channel.send('You have to be in a voice channel to stop the music!');
-  if (!serverQueue)
-    return message.channel.send('There is no song that I could skip!');
-  serverQueue.connection.destroy();
-}
-
-function pause(message, serverQueue, audioPlayer) {
+function pause(message, serverQueue) {
   if (!message.member.voice.channel)
     return message.channel.send('You have to be in a voice channel to stop the music!');
 
@@ -159,7 +132,7 @@ function pause(message, serverQueue, audioPlayer) {
   audioPlayer.pause();
 }
 
-function resumeSong(message, serverQueue, audioPlayer) {
+function resumeSong(message, serverQueue) {
   if (!message.member.voice.channel)
     return message.channel.send('You have to be in a voice channel to stop the music!');
 
@@ -169,7 +142,7 @@ function resumeSong(message, serverQueue, audioPlayer) {
   audioPlayer.unpause();
 }
 
-function stop(message, serverQueue, audioPlayer) {
+function stop(message, serverQueue) {
   if (!message.member.voice.channel)
     return message.channel.send('You have to be in a voice channel to stop the music!');
 
@@ -215,7 +188,7 @@ function playSong(message, queueConstruct) {
   console.log('Playing:', songInfo.title);
 }
 
-function queueList(message, serverQueue, audioPlayer){ 
+async function queueList(message, serverQueue){ 
   let qty = 0;
   message.channel.send("Queue:");
   serverQueue.songs.forEach(element => {
@@ -224,7 +197,7 @@ function queueList(message, serverQueue, audioPlayer){
   });
 }
 
-async function playSongByPosition(message, serverQueue, audioPlayer){ 
+async function playSongByPosition(message, serverQueue){ 
   let position = message.content.split(' ')[2];
   if(serverQueue.songs.length < position){ 
     message.channel.send(`Invalid position`);
@@ -391,7 +364,7 @@ async function playQueue(message, serverQueue, audioPlayer, voiceChannel) {
         playNextSong(message, serverQueue);
       }
   });
-  console.log('Playing:', song);
+  console.log('Playing:', song.title);
 }
 
 
