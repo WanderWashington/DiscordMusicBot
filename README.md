@@ -26,7 +26,7 @@ For this bot, the following commands are working and available:
 ## Arguments
 The arguments below can be used with the play command
 
-|   Command        | Description                                         |
-| -----------      | ------------------------------------------          |
-|    --p number    |   execute the link a specific position of the queue |
-|    --shuffle     |   randomize the playlist queue                      |
+|   Command        | Description                                                  |
+| -----------      | ------------------------------------------                   |
+|    --p number    |   play the link video using the number position of the queue |
+|    --shuffle     |   randomize the playlist queue                               |
