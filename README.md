@@ -17,11 +17,11 @@ For this bot, the following commands are working and available:
 
 |   Command   | Description                                          |
 | ----------- | ------------------------------------------           |
-|    !play    |   execute a link video or a playlist                 |
-|    !stop    |   stop the queue or the link video                   |
-|    !pause   |   pause the link video                               |
-|    !resume  |   unpause the link video                             |
-!    !list    |   list all queued links returning position and title |
+|    play    |   execute a link video or a playlist                  |
+|    stop    |   stop the queue or the link video                    |
+|    pause   |   pause the link video                                |
+|    resume  |   unpause the link video                              |
+!    list    |   list all queued links returning position and title  |
 
 ## Arguments
 The arguments below can be used with the play command
