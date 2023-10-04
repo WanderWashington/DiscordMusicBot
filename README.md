@@ -21,7 +21,7 @@ For this bot, the following commands are working and available:
 |    stop     |   stop the queue or the link video                    |
 |    pause    |   pause the link video                                |
 |    resume   |   unpause the link video                              |
-!    list     |   list all queued links returning position and title  |
+|    list     |   list all queued links returning position and title  |
 
 ## Arguments
 The arguments below can be used with the play command
