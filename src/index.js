@@ -264,11 +264,21 @@ async function playSongByPosition(message, serverQueue, audioPlayer){
   message.channel.send(`Playing ${songInfo.title}`);
 }
 
+function shuffleList(serverQueue){ 
+  for(let i = serverQueue.songs.length -1; i>0; i--){ 
+    var j = Math.floor(Math.random() * (i+1));
+
+    var temp = serverQueue.songs[i];
+    serverQueue.songs[i] = serverQueue.songs[j];
+    serverQueue.songs[j] = temp
+  }
+}
+
 async function executePlaylist(message, voiceChannel, serverQueue, playlistURL) {
   try {
-    let playlistInfo = await play.playlist_info(playlistURL);
+    let playlistInfo = await play.playlist_info(playlistURL.split(' ')[0]);
     let playlistSongs = playlistInfo.videos;
-
+    const shuffle = message.content.includes("--shuffle");
     if (!serverQueue) {
       const queueConstruct = {
         textChannel: message.channel,
@@ -287,13 +297,14 @@ async function executePlaylist(message, voiceChannel, serverQueue, playlistURL) 
       enqueueSong(message, voiceChannel, serverQueue, stream, song.title);
     }
 
+    if(shuffle)
+      shuffleList(serverQueue);
     message.channel.send(`Added ${playlistSongs.length} songs from the playlist to the queue.`);
 
     // Start playback if not already playing
     if (!serverQueue.playing) {
       playNextSong(message, serverQueue);
     }
-
     playQueue(message, serverQueue, audioPlayer, voiceChannel);
   } catch (error) {
     console.error(error);
@@ -384,6 +395,7 @@ async function playQueue(message, serverQueue, audioPlayer, voiceChannel) {
 }
 
 
+
 async function playNextSong(message, serverQueue) {
   if(!serverQueue){
     message.channel.send(`Empty Queue`);
@@ -414,5 +426,7 @@ async function playNextSong(message, serverQueue) {
   
   message.channel.send(`Playing ${songInfo.title}`);
 }
+
+
 
 client.login(token);
