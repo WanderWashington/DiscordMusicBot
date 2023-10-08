@@ -400,6 +400,4 @@ async function playNextSong(message, serverQueue) {
   message.channel.send(`Playing ${songInfo.title}`);
 }
 
-
-
 client.login(token);
