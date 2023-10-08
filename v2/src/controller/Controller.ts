@@ -1,2 +1,1 @@
-import DiscordProvider from "../provider/DiscordProvider";
-
+import DiscordProvider from '../provider/DiscordProvider';
