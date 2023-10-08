@@ -16,7 +16,7 @@
         "removeComments": true,
         "typeRoots": [
             "node_modules/@types",
-            "./global.d.ts"
+            "./global.d.ts",
         ],
         "sourceMap": false,
         "baseUrl": "./"
