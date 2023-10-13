@@ -78,7 +78,9 @@ async function execute(message, serverQueue) {
     return;
   }
 
-  let yt_info = await play.search(message.content.split('play')[1], {
+  const youtubeURL = formatYoutubeUrl(message.content.split('play')[1]);
+
+  let yt_info = await play.search(youtubeURL, {
     limit: 1,
   });
 
@@ -122,6 +124,24 @@ async function execute(message, serverQueue) {
     message.channel.send(`Playing ${yt_info[0].title}`);
   }
 }
+
+
+function formatYoutubeUrl(url) {
+  const regExp =
+    /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+
+  const match = url.match(regExp);
+
+  if (match && match[2].length === 11) {
+    return `https://www.youtube.com/${match[1]}${match[2]}`;
+    // return match[2];
+  }
+
+  console.log('The supplied URL is not a valid youtube URL');
+
+  return url;
+}
+
 
 function pause(message, serverQueue) {
   if (!message.member.voice.channel)
