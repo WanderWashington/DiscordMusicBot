@@ -134,7 +134,6 @@ function formatYoutubeUrl(url) {
 
   if (match && match[2].length === 11) {
     return `https://www.youtube.com/${match[1]}${match[2]}`;
-    // return match[2];
   }
 
   console.log('The supplied URL is not a valid youtube URL');
